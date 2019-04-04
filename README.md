@@ -1,1 +1,3 @@
-# anonymous_facebook_votes
+# Anonymous Votes - on Facebook
+
+Work in progress.
