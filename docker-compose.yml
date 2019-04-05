@@ -1,4 +1,9 @@
-version: '2'
+version: '3.6'
+
+x-db-vars: &db-vars
+  MYSQL_DATABASE: 'app'
+  MYSQL_USER: 'app'
+  MYSQL_PASSWORD: 'app'
 
 services:
   nginx:
@@ -9,10 +14,33 @@ services:
       - ./app:/app
       - ./conf/nginx/site.conf:/etc/nginx/conf.d/default.conf
       - ./logs/nginx:/var/log/nginx
+    restart: always
+    depends_on:
+      - php
     links:
       - php
 
   php:
-    image: php:7-fpm
+    image: phillaf/php-mysql
+    restart: always
+    depends_on:
+      - mysql
+    links:
+      - mysql
     volumes:
       - ./app:/app
+    environment:
+      MYSQL_SERVER: 'mysql'
+      <<: *db-vars
+
+  mysql:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yeah'
+      <<: *db-vars
+    volumes:
+      - mysqldata:/var/lib/mysql
+
+volumes:
+  mysqldata:
